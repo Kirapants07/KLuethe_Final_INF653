@@ -1,10 +1,12 @@
 //import states.json data
+
 const data = {
     states: require('../model/states.json'),
     setStates: function (data) {this.states = data}
 }
+
 //import mongoDB data
-const mongoStates = require('../model/States');
+const mongoStates = require('../model/States.js');
 
 //MAKE ME ASYNC!!!
 const getAllStates = async (req, res) => {
@@ -22,9 +24,14 @@ const getAllStates = async (req, res) => {
     // ('/states/?contig=false')
     else if (contig === 'false'){
         statesList = data.states.filter(st => st.code === 'AK' || st.code === 'HI');
-        // statesList.forEach(state => {
-
-        // })
+        statesList.forEach(state => {
+            //const stateExists = mongoStates.find(st => st.stateCode === state.code); //CAUSES FATAL ERROR
+            //console.log(stateExists);
+            //if (stateExists) {
+                //let allStateData = [...statesList, ...stateExists.funfacts];
+                //delete allStateData.stateCode;
+            //}
+         })
         res.json(statesList);
     }
     //if no contig query is specified ('/states')
@@ -43,15 +50,22 @@ const createNewState = (req,res) => {
 const updateState = (req, res) => {
     res.json({
         //list attributes to return
-    })
+    });
 }
 
 const deleteState = (req, res) => {
-    res.json({ "id": req.body.id })
+    res.json({ "id": req.body.id });
 }
 
-const getState = (req, res) => {
-    res.json(data.states)
+const getState = async (req, res) => {
+    if (!req?.params?.state){
+        return res.status(400).json({"message":"Invalid state abbreviation parameter"});
+    }
+    const oneState = await mongoStates.findOne({stateCode: req.body.state}).exec();
+    // if (!oneState){
+    //     return res.status(204).json({"message":"Invalid state abbreviation parameter"});
+    // }
+    res.json(oneState);
 }
 
 module.exports = {
