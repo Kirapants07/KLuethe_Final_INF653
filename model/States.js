@@ -6,9 +6,9 @@ const stateSchema = new Schema({
     stateCode: {
         type: String,
         required: true,
-        //unique: true
+        unique: true
     },
-    //funfacts: [String]
+    funfacts: [String]
 });
 
-module.exports = mongoose.model('State', userSchema);
+module.exports = mongoose.model('State', stateSchema);

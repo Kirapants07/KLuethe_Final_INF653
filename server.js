@@ -22,9 +22,6 @@ app.use(express.json());
 //serve static files eg. css, images, etc.
 app.use(express.static(path.join(__dirname, '/public')));
 
-//verify state codes
-//app.use('/states/:state', require('./controllers/verifyState'));
-
 //routes
 app.use('/', require('./routes/root'));
 app.use('/states', require('./routes/api/states'));
