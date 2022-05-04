@@ -4,7 +4,19 @@ const data = {
 }
 
 const getAllStates = (req, res) => {
-    res.json(data.states);
+    //('/states/?contig=true')
+    if (req.query?.contig === 'true') {
+        res.json({"message" : "contig is true"})
+    }
+    // ('/states/?contig=false')
+    else if (req.query?.contig === 'false'){
+        res.json({"message" : "contig is true"})
+    }
+    //if no contig query is specified ('/states')
+    else {
+        res.json(data.states);
+    }
+    
 }
 
 const createNewState = (req,res) => {
