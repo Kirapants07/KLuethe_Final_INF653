@@ -15,7 +15,11 @@ router.route('/:state')
     .get(statesController.getState);
 
 router.route('/:state/funfact')
-    .get(statesController.getFunfact);
+    .get(statesController.getFunfact)
+    .post(statesController.createFunfact)
+    .put(statesController.updateFunfact)
+    .patch(statesController.updateFunfact)
+    .delete(statesController.deleteFunfact);
 
 router.route('/:state/capital')
     .get(statesController.getAttribute);

@@ -5,6 +5,7 @@ const data = {
     setStates: function (data) {this.states = data}
 }
 
+const { mongo } = require('mongoose');
 //import mongoDB data
 const mongoStates = require('../model/States.js');
 
@@ -13,7 +14,6 @@ const getAllStates = async (req, res) => {
     //create array to hold states list
     let statesList;
     const contig = req.query?.contig
-    console.log(contig);
 
     //('/states/?contig=true')
     if (contig === 'true') {
@@ -30,6 +30,9 @@ const getAllStates = async (req, res) => {
 
     statesList.forEach(state => {
         try {
+            //const oneMongoState = mongoStates.find({stateCode: state.code});
+            //state.funfacts = oneMongoState.funfacts;
+
             //const stateExists = mongoStates.find(st => st.stateCode === state.code); //CAUSES FATAL ERROR
             //console.log(stateExists);
             //if (stateExists) {
@@ -42,24 +45,8 @@ const getAllStates = async (req, res) => {
 
     })
     res.json(statesList);
-    
 }
 
-const createNewState = (req,res) => {
-    req.json({
-        //list attributes to return
-    });
-}
-
-const updateState = (req, res) => {
-    res.json({
-        //list attributes to return
-    });
-}
-
-const deleteState = (req, res) => {
-    res.json({ "id": req.body.id });
-}
 
 const getState = async (req, res) => {
     //check if state abbreviation is missing
@@ -111,6 +98,53 @@ const getFunfact = async (req, res) => {
         res.json({"funfact": randomArrayElement});
 }
 
+const createFunfact = async (req, res) => {
+    //body should contain {"funfacts": ["fact1", "fact2"]}
+    //check if body exists
+    if (!req?.body?.funfacts){
+        return res.status(400).json({"message": "State fun facts value required"});
+    }
+    //check if funfacts supplied are in an array
+    if (!Array.isArray(req?.body?.funfacts)){
+        return res.status(400).json({"message": "State fun facts value must be an array"});
+    }
+    
+    const oneMongoState = await mongoStates.findOne({stateCode: req.params.state.toUpperCase()}).exec();
+    
+     //if state is not in MongoDB, create a new entry
+    if (!oneMongoState) {
+        try {
+            const result = await mongoStates.create({
+                "stateCode": req.params.state.toUpperCase(),
+                "funfacts": req.body.funfacts
+            });
+            res.status(201).json(result);
+        } catch (err) {
+            //console.log(err);
+        }
+    }
+    //if state is already in MongoDB, add new funfacts to it
+    else {
+        let allFunfacts = [...oneMongoState.funfacts, ...req.body.funfacts];
+        console.log(allFunfacts);
+        const update = await mongoStates.updateOne({"stateCode": req.params.state.toUpperCase()},{"funfacts": allFunfacts});
+        const result = await mongoStates.findOne({stateCode: req.params.state.toUpperCase()}).exec();
+        res.status(201).json(result);
+    } 
+    
+
+}
+
+const updateFunfact = async (req, res) => {
+    res.json({"message": "update funfact"});
+}
+
+const deleteFunfact = async (req, res) => {
+
+    //body contains {"index": 1} where 1 is index, starting at position 1, not 0
+    res.json({"message": "delete funfact"});
+}
+
 const getAttribute = async (req, res) => {
     //check if state abbreviation is missing
     // if (!req?.params?.state){
@@ -159,10 +193,10 @@ const getAttribute = async (req, res) => {
 
 module.exports = {
     getAllStates,
-    createNewState,
-    updateState,
-    deleteState,
     getState,
     getFunfact,
-    getAttribute
+    getAttribute,
+    createFunfact,
+    updateFunfact,
+    deleteFunfact
 }
