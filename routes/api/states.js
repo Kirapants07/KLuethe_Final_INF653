@@ -13,4 +13,20 @@ router.route('/')
 router.route('/:state')
     .get(statesController.getState);
 
+router.route('/:state/funfact')
+    .get(statesController.getFunfact);
+
+router.route('/:state/capital')
+    .get(statesController.getAttribute);
+
+router.route('/:state/nickname')
+    .get(statesController.getState);
+
+router.route('/:state/population')
+    .get(statesController.getState);
+
+router.route('/:state/admission')
+    .get(statesController.getState);
+
+
 module.exports = router;
