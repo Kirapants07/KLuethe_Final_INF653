@@ -127,10 +127,34 @@ const getAttribute = async (req, res) => {
     //get info for state from MongoDB
     const oneMongoState = await mongoStates.findOne({stateCode: req.params.state.toUpperCase()}).exec();
 
-    res.json({
-        "state" : oneJSONState[0].state,
-        "capital" : oneJSONState[0].capital_city
-    });
+    //req.route.path.split('/')
+    const pathArray = req.route.path.split('/');
+    //console.log(pathArray[2]);
+    if (pathArray[2] === 'capital'){
+        res.json({
+            "state" : oneJSONState[0].state,
+            "capital" : oneJSONState[0].capital_city
+        });
+    }
+    else if (pathArray[2] === 'nickname'){
+        res.json({
+            "state" : oneJSONState[0].state,
+            "nickname" : oneJSONState[0].nickname
+        });
+    }
+    else if (pathArray[2] === 'population'){
+        res.json({
+            "state" : oneJSONState[0].state,
+            "population" : oneJSONState[0].population
+        });
+    }
+    else if (pathArray[2] === 'admission'){
+        res.json({
+            "state" : oneJSONState[0].state,
+            "admission" : oneJSONState[0].admission_date
+        });
+    }
+
 }
 
 module.exports = {

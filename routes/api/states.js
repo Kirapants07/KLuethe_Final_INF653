@@ -20,13 +20,13 @@ router.route('/:state/capital')
     .get(statesController.getAttribute);
 
 router.route('/:state/nickname')
-    .get(statesController.getState);
+    .get(statesController.getAttribute);
 
 router.route('/:state/population')
-    .get(statesController.getState);
+    .get(statesController.getAttribute);
 
 router.route('/:state/admission')
-    .get(statesController.getState);
+    .get(statesController.getAttribute);
 
 
 module.exports = router;
