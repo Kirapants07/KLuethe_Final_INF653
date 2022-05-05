@@ -13,18 +13,19 @@ const getAllStates = async (req, res) => {
     //create array to hold states list
     let statesList;
     const contig = req.query?.contig
+    console.log(contig);
 
-    //if no contig query is specified ('/states')
-    if (!contig) {
-        statesList = data.states;
-    }
     //('/states/?contig=true')
     if (contig === 'true') {
         statesList = data.states.filter(st => st.code !== 'AK' && st.code !== 'HI');
     }
     // ('/states/?contig=false')
-    else {
+    else if (contig === 'false'){
         statesList = data.states.filter(st => st.code === 'AK' || st.code === 'HI');
+    }
+    //if no contig query is specified ('/states')
+    else {
+        statesList = data.states;
     }
 
     statesList.forEach(state => {
