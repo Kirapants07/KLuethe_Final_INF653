@@ -144,13 +144,13 @@ const getAttribute = async (req, res) => {
     else if (pathArray[2] === 'population'){
         res.json({
             "state" : oneJSONState[0].state,
-            "population" : oneJSONState[0].population
+            "population" : oneJSONState[0].population.toLocaleString('en-US')
         });
     }
     else if (pathArray[2] === 'admission'){
         res.json({
             "state" : oneJSONState[0].state,
-            "admission" : oneJSONState[0].admission_date
+            "admitted" : oneJSONState[0].admission_date
         });
     }
 
