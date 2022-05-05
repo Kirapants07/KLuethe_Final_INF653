@@ -101,21 +101,20 @@ const getFunfact = async (req, res) => {
     //get info for state from MongoDB
     const oneMongoState = await mongoStates.findOne({stateCode: req.params.state.toUpperCase()}).exec();
 
-    let singleStateData = oneJSONState[0];
-    try{
-        singleStateData.funfacts = oneMongoState.funfacts;
-    } catch (err) {
-        //intentionally empty
+    //if there are no funfacts
+    if (!oneMongoState) {
+        res.status(404).json({"message":`No Fun Facts found for ${oneJSONState[0].state}`});
     }
-    const randomArrayElement = singleStateData.funfacts[Math.floor(Math.random() * singleStateData.funfacts.length)];
+
+    const randomArrayElement = oneMongoState.funfacts[Math.floor(Math.random() * oneMongoState.funfacts.length)];
         res.json({"funfact": randomArrayElement});
 }
 
 const getAttribute = async (req, res) => {
     //check if state abbreviation is missing
-    if (!req?.params?.state){
-        return res.status(400).json({"message":"Invalid state abbreviation parameter"});
-    }
+    // if (!req?.params?.state){
+    //     return res.status(400).json({"message":"Invalid state abbreviation parameter"});
+    // }
     //get array for state from JSON data. if none found, returns empty array 
     const oneJSONState = data.states.filter(st => st.code === req.params.state.toUpperCase());
 
