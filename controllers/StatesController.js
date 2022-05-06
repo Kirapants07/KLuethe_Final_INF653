@@ -141,10 +141,22 @@ const updateFunfact = async (req, res) => {
     //calculate index place
     const funfactIndex = req.body.index -1;
 
-    if (oneMongoState.funfacts && oneMongoState.funfacts.length < funfactIndex){
-        return res.status(404).json({"message":`No Fun Facts found at that index for ${oneJSONState[0].state}`});
+    //if there is no fun fact at the given index
+    //if there are no funfacts, or ther length of funfacts array is less than given index-1, or index-1 is less than 0
+    if (oneMongoState.funfacts || oneMongoState.funfacts.length < funfactIndex || funfactIndex < 0){
+        return res.status(404).json({"message":`No Fun Fact found at that index for ${oneJSONState[0].state}`});
     }
 
+    //update entry
+    let allFunfacts = oneMongoState.funfacts;
+    console.log(allFunfacts);
+
+    //add in new funfact
+    allFunfacts.splice(funfactIndex, 1, req.body.funfact);
+
+    const update = await mongoStates.updateOne({"stateCode": req.code},{"funfacts": allFunfacts});
+
+    //retrieve updates document
     const result = await mongoStates.findOne({stateCode: req.code}).exec();
     res.status(201).json(result);
 }
