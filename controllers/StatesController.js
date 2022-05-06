@@ -5,7 +5,6 @@ const data = {
     setStates: function (data) {this.states = data}
 }
 
-const { mongo } = require('mongoose');
 //import mongoDB data
 const mongoStates = require('../model/States.js');
 
@@ -33,14 +32,17 @@ const getAllStates = async (req, res) => {
             //const oneMongoState = mongoStates.find({stateCode: state.code});
             //state.funfacts = oneMongoState.funfacts;
 
-            //const stateExists = mongoStates.find(st => st.stateCode === state.code); //CAUSES FATAL ERROR
+            if (stateCode !== null){
+                const stateExists = mongoStates.find(st => st.stateCode === state.code); //CAUSES FATAL ERROR
+            }
+
             //console.log(stateExists);
             //if (stateExists) {
                 //let allStateData = [...statesList, ...stateExists.funfacts];
             //delete allStateData.stateCode;
             //}
         } catch (err) {
-            console.log("State does not have funfacts.");
+           // console.log("State does not have funfacts.");
         }
 
     })
@@ -49,17 +51,9 @@ const getAllStates = async (req, res) => {
 
 
 const getState = async (req, res) => {
-    //check if state abbreviation is missing
-    if (!req?.params?.state){
-        return res.status(400).json({"message":"Invalid state abbreviation parameter"});
-    }
+
     //get array for state from JSON data. if none found, returns empty array 
     const oneJSONState = data.states.filter(st => st.code === req.params.state.toUpperCase());
-
-    //if parameter does not match state abbreviation, show error message
-    if (!oneJSONState[0]){
-        return res.status(400).json({"message":"Invalid state abbreviation parameter"});
-    }
 
     //get info for state from MongoDB
     const oneMongoState = await mongoStates.findOne({stateCode: req.params.state.toUpperCase()}).exec();
@@ -74,17 +68,8 @@ const getState = async (req, res) => {
 }
 
 const getFunfact = async (req, res) => {
-    //check if state abbreviation is missing
-    if (!req?.params?.state){
-        return res.status(400).json({"message":"Invalid state abbreviation parameter"});
-    }
     //get array for state from JSON data. if none found, returns empty array 
     const oneJSONState = data.states.filter(st => st.code === req.params.state.toUpperCase());
-
-    //if parameter does not match state abbreviation, show error message
-    if (!oneJSONState[0]){
-        return res.status(400).json({"message":"Invalid state abbreviation parameter"});
-    }
 
     //get info for state from MongoDB
     const oneMongoState = await mongoStates.findOne({stateCode: req.params.state.toUpperCase()}).exec();
@@ -131,11 +116,18 @@ const createFunfact = async (req, res) => {
         const result = await mongoStates.findOne({stateCode: req.params.state.toUpperCase()}).exec();
         res.status(201).json(result);
     } 
-    
-
 }
 
 const updateFunfact = async (req, res) => {
+    //check if body exists
+    //TEST THEESE ***
+    // if (!req?.body?.index){
+    //     return res.status(400).json({"message": "State fun fact index value required"});
+    // }
+    // if (!req?.body?.funfact){
+    //     return res.status(400).json({"message": "State fun fact value required"});
+    // }
+
     res.json({"message": "update funfact"});
 }
 
@@ -146,20 +138,8 @@ const deleteFunfact = async (req, res) => {
 }
 
 const getAttribute = async (req, res) => {
-    //check if state abbreviation is missing
-    // if (!req?.params?.state){
-    //     return res.status(400).json({"message":"Invalid state abbreviation parameter"});
-    // }
     //get array for state from JSON data. if none found, returns empty array 
     const oneJSONState = data.states.filter(st => st.code === req.params.state.toUpperCase());
-
-    //if parameter does not match state abbreviation, show error message
-    if (!oneJSONState[0]){
-        return res.status(400).json({"message":"Invalid state abbreviation parameter"});
-    }
-
-    //get info for state from MongoDB
-    const oneMongoState = await mongoStates.findOne({stateCode: req.params.state.toUpperCase()}).exec();
 
     //req.route.path.split('/')
     const pathArray = req.route.path.split('/');

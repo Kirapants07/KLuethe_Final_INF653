@@ -7,31 +7,30 @@ const statesController = require('../../controllers/StatesController');
 const verifyState = require('../../controllers/verifyState');
 
 
-//process requests to states api
+//process requests to /:states api
 router.route('/')
     .get(statesController.getAllStates);
 
 router.route('/:state')
-    .get(statesController.getState);
+ .get(verifyState(), statesController.getState);
 
 router.route('/:state/funfact')
-    .get(statesController.getFunfact)
+    .get(verifyState(),statesController.getFunfact)
     .post(statesController.createFunfact)
-    .put(statesController.updateFunfact)
     .patch(statesController.updateFunfact)
     .delete(statesController.deleteFunfact);
 
 router.route('/:state/capital')
-    .get(statesController.getAttribute);
+    .get(verifyState(),statesController.getAttribute);
 
 router.route('/:state/nickname')
-    .get(statesController.getAttribute);
+    .get(verifyState(),statesController.getAttribute);
 
 router.route('/:state/population')
-    .get(statesController.getAttribute);
+    .get(verifyState(),statesController.getAttribute);
 
 router.route('/:state/admission')
-    .get(statesController.getAttribute);
+    .get(verifyState(),statesController.getAttribute);
 
 
 module.exports = router;
