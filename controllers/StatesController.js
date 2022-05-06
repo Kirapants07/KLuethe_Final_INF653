@@ -53,10 +53,10 @@ const getAllStates = async (req, res) => {
 const getState = async (req, res) => {
 
     //get array for state from JSON data. if none found, returns empty array 
-    const oneJSONState = data.states.filter(st => st.code === req.params.state.toUpperCase());
+    const oneJSONState = data.states.filter(st => st.code === req.code);
 
     //get info for state from MongoDB
-    const oneMongoState = await mongoStates.findOne({stateCode: req.params.state.toUpperCase()}).exec();
+    const oneMongoState = await mongoStates.findOne({stateCode: req.code}).exec();
 
     let singleStateData = oneJSONState[0];
     try{
@@ -69,10 +69,10 @@ const getState = async (req, res) => {
 
 const getFunfact = async (req, res) => {
     //get array for state from JSON data. if none found, returns empty array 
-    const oneJSONState = data.states.filter(st => st.code === req.params.state.toUpperCase());
+    const oneJSONState = data.states.filter(st => st.code === req.code);
 
     //get info for state from MongoDB
-    const oneMongoState = await mongoStates.findOne({stateCode: req.params.state.toUpperCase()}).exec();
+    const oneMongoState = await mongoStates.findOne({stateCode: req.code}).exec();
 
     //if there are no funfacts
     if (!oneMongoState) {
@@ -94,13 +94,13 @@ const createFunfact = async (req, res) => {
         return res.status(400).json({"message": "State fun facts value must be an array"});
     }
     
-    const oneMongoState = await mongoStates.findOne({stateCode: req.params.state.toUpperCase()}).exec();
+    const oneMongoState = await mongoStates.findOne({stateCode: req.code}).exec();
     
      //if state is not in MongoDB, create a new entry
     if (!oneMongoState) {
         try {
             const result = await mongoStates.create({
-                "stateCode": req.params.state.toUpperCase(),
+                "stateCode": req.code,
                 "funfacts": req.body.funfacts
             });
             res.status(201).json(result);
@@ -111,9 +111,8 @@ const createFunfact = async (req, res) => {
     //if state is already in MongoDB, add new funfacts to it
     else {
         let allFunfacts = [...oneMongoState.funfacts, ...req.body.funfacts];
-        console.log(allFunfacts);
-        const update = await mongoStates.updateOne({"stateCode": req.params.state.toUpperCase()},{"funfacts": allFunfacts});
-        const result = await mongoStates.findOne({stateCode: req.params.state.toUpperCase()}).exec();
+        const update = await mongoStates.updateOne({"stateCode": req.code},{"funfacts": allFunfacts});
+        const result = await mongoStates.findOne({stateCode: req.code}).exec();
         res.status(201).json(result);
     } 
 }
@@ -121,14 +120,33 @@ const createFunfact = async (req, res) => {
 const updateFunfact = async (req, res) => {
     //check if body exists
     //TEST THEESE ***
-    // if (!req?.body?.index){
-    //     return res.status(400).json({"message": "State fun fact index value required"});
-    // }
-    // if (!req?.body?.funfact){
-    //     return res.status(400).json({"message": "State fun fact value required"});
-    // }
+    if (!req?.body?.index){
+        return res.status(400).json({"message": "State fun fact index value required"});
+    }
+    if (!req?.body?.funfact){
+        return res.status(400).json({"message": "State fun fact value required"});
+    }
 
-    res.json({"message": "update funfact"});
+    //get array for state from JSON data. if none found, returns empty array 
+    const oneJSONState = data.states.filter(st => st.code === req.code);
+
+    //check if state has funfacts
+    const oneMongoState = await mongoStates.findOne({stateCode: req.code}).exec();
+
+    //if there are no funfacts
+    if (!oneMongoState) {
+        return res.status(404).json({"message":`No Fun Facts found for ${oneJSONState[0].state}`});
+    }
+
+    //calculate index place
+    const funfactIndex = req.body.index -1;
+
+    if (oneMongoState.funfacts && oneMongoState.funfacts.length < funfactIndex){
+        return res.status(404).json({"message":`No Fun Facts found at that index for ${oneJSONState[0].state}`});
+    }
+
+    const result = await mongoStates.findOne({stateCode: req.code}).exec();
+    res.status(201).json(result);
 }
 
 const deleteFunfact = async (req, res) => {
@@ -139,7 +157,7 @@ const deleteFunfact = async (req, res) => {
 
 const getAttribute = async (req, res) => {
     //get array for state from JSON data. if none found, returns empty array 
-    const oneJSONState = data.states.filter(st => st.code === req.params.state.toUpperCase());
+    const oneJSONState = data.states.filter(st => st.code === req.code);
 
     //req.route.path.split('/')
     const pathArray = req.route.path.split('/');
